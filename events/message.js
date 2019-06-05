@@ -59,9 +59,4 @@ module.exports = (client, msg) => {
     });
   }
 
-
-
-
-  // TODO, Check for highest GROSS profit (considering price * total units)
-
 }
