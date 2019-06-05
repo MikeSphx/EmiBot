@@ -5,18 +5,16 @@ module.exports = (client, msg) => {
   const secure = require('../secure.js');
   const apiTag = secure.xivKey;
 
-
-  // Functions
+  const ffxiv = require('../util/ffxiv.js');
 
   _averagePricePerUnit = function(arr) {
-    // var sum = arr.reduce((a, b) => {
-    //   return a + b.PricePerUnit;
-    // });
     var sumOfPrices = 0;
     arr.forEach(({PricePerUnit}) => sumOfPrices += PricePerUnit);
 
     return sumOfPrices / arr.length;
   }
+
+  // Functions
 
   // General
 
@@ -43,67 +41,8 @@ module.exports = (client, msg) => {
   // Gives a summary of what items to look into
 
   else if (msg.content === 'emi test') {
-
-    // Testing with Ice Shard, ID: 3
-    axios.get('https://xivapi.com/market/item/3', {
-      params: {
-        dc: 'Crystal',
-        private_key: apiTag
-      }
-    })
-    .then((response) => {
-      // HQ
-      // Find lowest 10 prices in Crystal Data Center
-      console.log(response.data.Coeurl);
-      var allPrices = [];
-
-      for (var world in response.data) {
-        var prices = response.data[world].Prices;
-        prices.forEach(function(element) { element.World = world; });
-        var allPrices = prices.concat();
-      }
-
-      var sortedPrices = allPrices.sort((a, b) => { return a.PricePerUnit - b.PricePerUnit });
-      var lowestPrices = sortedPrices.slice(0, 10);
-
-      // Find latest 10 sales in Coeurl
-      var allCoeurlSales = response.data.Coeurl.History;
-      var latestSales = allCoeurlSales.slice(0, 10);
-
-      var avgPrice = _averagePricePerUnit(lowestPrices);
-      var avgSale = _averagePricePerUnit(latestSales);
-      var differential = Math.round(((avgSale / avgPrice) * 100) - 100);
-      
-      console.log(avgPrice);
-      console.log(avgSale);
-      console.log(differential);
-
-      var coeurlItemData = response.data.Coeurl.Item;
-
-      var replyMsg = `here's what I found:\
-        \n\n**Item**: ${coeurlItemData.Name} - ID: ${coeurlItemData.ID}\
-        \n**Diff**: ${differential}%\
-        \n\n**Avg Lowest 10 Prices**: ${avgPrice} gil\
-        \n**Lowest Price**: ${lowestPrices[0].PricePerUnit} gil - ${lowestPrices[0].RetainerName}, ${lowestPrices[0].World}\
-        \n\n**Avg Sales in Coeurl**: ${avgSale} gil\
-        \n**Latest Sale in Coeurl**: ${latestSales[0].PricePerUnit} gil - ${latestSales[0].CharacterName}, *time wip*\
-        \n**# of Sales in Past 48 Hrs**: *wip*`;
-
-      msg.reply(replyMsg);
-
-      // Compare averages, determine if worth making an alert for
-
-      // If worthid, print message to server
-      // Item name, item ID
-      // Average of lowest 10 prices + lowest price
-      // Average of latest 10 sales
-      // How many sales in the past 48 hours
-
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-
+    var arr = [57, 58];
+    arr.forEach((cID) => ffxiv.bestDealsGivenCategoryID(cID, msg));
   }
 
   else if (msg.content === 'emi ffxiv') {
