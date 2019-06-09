@@ -41,8 +41,8 @@ module.exports = (client, msg) => {
   // Gives a summary of what items to look into
 
   else if (msg.content === 'emi test') {
-    // var arr = [57, 58];
-    var arr = [58];
+    // var arr = [48, 57, 58];
+    var arr = [57];
     arr.forEach((cID) => ffxiv.bestDealsGivenCategoryID(cID, msg));
   }
 
