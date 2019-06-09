@@ -23,34 +23,36 @@ sendMarketAnalysisEmbed = function(marketAnalyses, msg) {
   // Average of latest 10 sales
   // How many sales in the past 48 hours
 
-  var replyMsg = `here's what I found:`;
-
-  var test = [];
-
+  // Per item category
   marketAnalyses.forEach((marketAnalysis) => {
+    // Per item in a category
     marketAnalysis.forEach((mA) => {
+
+      var replyMsg = `here's what I found:`;
 
       if (mA.differential > 600) {
         var quality = mA.isHQ ? 'HQ' : 'LQ';
 
-        // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
-        // \n**Diff**: ${mA.differential}%\
-        // \n---------------------------------------------------------------`;
-
         replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
         \n**Quality**: ${quality}\
         \n**Diff**: ${mA.differential}%\
-        \n\n**Avg Lowest 10 Prices**: ${mA.avgPrice} gil\
-        \n**Lowest Price**: ${mA.lowestPrices[0].PricePerUnit} gil - ${mA.lowestPrices[0].RetainerName}, ${mA.lowestPrices[0].World}\
-        \n\n**Avg Sales in Coeurl**: ${mA.avgSale} gil\
-        \n**Latest Sale in Coeurl**: ${mA.latestSales[0].PricePerUnit} gil - ${mA.latestSales[0].CharacterName}, *time wip*\
-        \n**# of Sales in Past 48 Hrs**: *wip*\
+        \n**Avg Sales in Coeurl**: ${mA.avgSale} gil\
         \n---------------------------------------------------------------`;
+
+        // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
+        // \n**Quality**: ${quality}\
+        // \n**Diff**: ${mA.differential}%\
+        // \n\n**Avg Lowest 10 Prices**: ${mA.avgPrice} gil\
+        // \n**Lowest Price**: ${mA.lowestPrices[0].PricePerUnit} gil - ${mA.lowestPrices[0].RetainerName}, ${mA.lowestPrices[0].World}\
+        // \n\n**Avg Sales in Coeurl**: ${mA.avgSale} gil\
+        // \n**Latest Sale in Coeurl**: ${mA.latestSales[0].PricePerUnit} gil - ${mA.latestSales[0].CharacterName}, *time wip*\
+        // \n**# of Sales in Past 48 Hrs**: *wip*\
+        // \n---------------------------------------------------------------`;
+
+        msg.reply(replyMsg);
       }
     });
   });
-
-  msg.reply(replyMsg);
 }
 
 marketSummariesGivenItemIDs = function(ids) {
@@ -162,8 +164,6 @@ _createMarketAnalysisGivenSummaries = function(data) {
 
     marketAnalysis.push(resultLQ);
   });
-
-  console.log(marketAnalysis);
 
   return marketAnalysis;
 
