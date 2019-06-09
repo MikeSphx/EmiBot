@@ -36,7 +36,7 @@ sendMarketAnalysisEmbed = function(marketAnalyses, msg) {
         replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
         \n**Quality**: ${quality}\
         \n**Diff**: ${mA.differential}%\
-        \n**Avg Sales in Coeurl**: ${mA.avgSale} gil\
+        \n**Avg Unit Sale in Coeurl**: ${mA.avgSale} gil\
         \n---------------------------------------------------------------`;
 
         // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
@@ -100,8 +100,8 @@ _createMarketAnalysisGivenSummaries = function(data) {
         var salesLQ = marketInfo.History.filter((h) => h.IsHQ === false);
         var salesHQ = marketInfo.History.filter((h) => h.IsHQ === true);
 
-        latestSalesLQ = salesLQ.slice(0, 10);
-        latestSalesHQ = salesHQ.slice(0, 10);
+        latestSalesLQ = salesLQ.slice(0, 5);
+        latestSalesHQ = salesHQ.slice(0, 5);
 
         itemData = marketInfo.Item;
       }
