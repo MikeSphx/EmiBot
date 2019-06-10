@@ -42,7 +42,13 @@ module.exports = (client, msg) => {
 
   else if (msg.content === 'emi test') {
     // var arr = [48, 57, 58];
-    var arr = [48, 57, 58];
+    // Meals 45
+    // Metal 48
+    // Cloth 50
+    // Materia 57
+    // Crystals 58
+
+    var arr = [50, 57, 58];
     arr.forEach((cID) => ffxiv.bestDealsGivenCategoryID(cID, msg));
   }
 
