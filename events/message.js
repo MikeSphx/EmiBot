@@ -7,13 +7,6 @@ module.exports = (client, msg) => {
 
   const ffxiv = require('../util/ffxiv.js');
 
-  _averagePricePerUnit = function(arr) {
-    var sumOfPrices = 0;
-    arr.forEach(({PricePerUnit}) => sumOfPrices += PricePerUnit);
-
-    return sumOfPrices / arr.length;
-  }
-
   // Functions
 
   // General
@@ -48,7 +41,7 @@ module.exports = (client, msg) => {
     // Materia 57
     // Crystals 58
 
-    var arr = [50, 57, 58];
+    var arr = [48, 57, 58];
     arr.forEach((cID) => ffxiv.bestDealsGivenCategoryID(cID, msg));
   }
 

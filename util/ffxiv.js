@@ -77,96 +77,111 @@ _createMarketAnalysisGivenSummaries = function(data) {
 
   var marketAnalysis = []
 
-  // Iterate through each item
-  data.forEach((item) => {
-    // console.log(deal);
+  try {
+    // Iterate through each item
+    data.forEach((item) => {
 
-    var allPricesLQ = [];
-    var allPricesHQ = [];
-    var latestSalesLQ = null;
-    var latestSalesHQ = null;
-    var itemData = null;
+      var allPricesLQ = [];
+      var allPricesHQ = [];
+      var latestSalesLQ = null;
+      var latestSalesHQ = null;
+      var itemData = null;
 
-    // Iterate through each world with that item
-    Object.keys(item).forEach(function (world) {
-      // console.log(world); // key
-      // console.log(item[world]); // value
-
-      var marketInfo = item[world];
-
-      // Save latest 10 sales in Coeurl
-      if (world === 'Coeurl') {
-
-        var salesLQ = marketInfo.History.filter((h) => h.IsHQ === false);
-        var salesHQ = marketInfo.History.filter((h) => h.IsHQ === true);
-
-        latestSalesLQ = salesLQ.slice(0, 5);
-        latestSalesHQ = salesHQ.slice(0, 5);
-
-        itemData = marketInfo.Item;
+      // Edge case, some items are null and not worth looking at
+      if (item == null || item.Coeurl.Item == null) {
+        return;
       }
 
-      var prices = marketInfo.Prices;
+      // Iterate through each world with that item
+      Object.keys(item).forEach(function (world) {
+        // console.log(world); // key
+        // console.log(item[world]); // value
 
-      prices.forEach(function(element) { element.World = world; });
+        var marketInfo = item[world];
 
-      var pricesLQ = prices.filter((p) => p.IsHQ === false);
-      var pricesHQ = prices.filter((p) => p.IsHQ === true);
+        // Save latest 10 sales in Coeurl
+        if (world === 'Coeurl') {
 
-      allPricesLQ = allPricesLQ.concat(pricesLQ);
-      allPricesHQ = allPricesHQ.concat(pricesHQ);
-    });
+          var salesLQ = marketInfo.History.filter((h) => h.IsHQ === false);
+          var salesHQ = marketInfo.History.filter((h) => h.IsHQ === true);
 
-    // Sort prices in the Data Center
-    if (allPricesHQ.length !== 0 && latestSalesHQ.length !== 0) {
-      var sortedPricesHQ = allPricesHQ.sort((a, b) => { return a.PricePerUnit - b.PricePerUnit });
-      var lowestPricesHQ = sortedPricesHQ.slice(0, 10);
+          latestSalesLQ = salesLQ.slice(0, 5);
+          latestSalesHQ = salesHQ.slice(0, 5);
 
-      var avgPriceHQ = _averagePricePerUnit(lowestPricesHQ);
-      var avgSaleHQ = _averagePricePerUnit(latestSalesHQ);
-      var differentialHQ = Math.round(((avgSaleHQ / avgPriceHQ) * 100) - 100);
+          itemData = marketInfo.Item;
+          buggedMarketInfo = marketInfo;
+        }
 
-      var resultHQ = {
+        var prices = marketInfo.Prices;
+
+        prices.forEach(function(element) { element.World = world; });
+
+        var pricesLQ = prices.filter((p) => p.IsHQ === false);
+        var pricesHQ = prices.filter((p) => p.IsHQ === true);
+
+        allPricesLQ = allPricesLQ.concat(pricesLQ);
+        allPricesHQ = allPricesHQ.concat(pricesHQ);
+      });
+
+      // Sort prices in the Data Center
+      if (allPricesHQ.length !== 0 && latestSalesHQ.length !== 0) {
+        var sortedPricesHQ = allPricesHQ.sort((a, b) => { return a.PricePerUnit - b.PricePerUnit });
+        var lowestPricesHQ = sortedPricesHQ.slice(0, 10);
+
+        var avgPriceHQ = _averagePricePerUnit(lowestPricesHQ);
+        var avgSaleHQ = _averagePricePerUnit(latestSalesHQ);
+        var differentialHQ = Math.round(((avgSaleHQ / avgPriceHQ) * 100) - 100);
+
+        var resultHQ = {
+
+          itemName: itemData.Name,
+          itemID: itemData.ID,
+          avgPrice: avgPriceHQ,
+          avgSale: avgSaleHQ,
+          differential: differentialHQ,
+          lowestPrices: lowestPricesHQ,
+          latestSales: latestSalesHQ,
+          isHQ: true
+        }
+        marketAnalysis.push(resultHQ);
+      }
+
+      var sortedPricesLQ = allPricesLQ.sort((a, b) => { return a.PricePerUnit - b.PricePerUnit });
+      var lowestPricesLQ = sortedPricesLQ.slice(0, 10);
+
+        // Calculate averages of prices and recent sales, then compute the differential
+      var avgPriceLQ = _averagePricePerUnit(lowestPricesLQ);
+
+      if (latestSalesLQ == null) {
+        console.log(item);
+        return;
+      }
+      var avgSaleLQ = _averagePricePerUnit(latestSalesLQ);
+      var differentialLQ = Math.round(((avgSaleLQ / avgPriceLQ) * 100) - 100);
+
+      // console.log(`Average Price: ${avgPrice}`);
+      // console.log(`Average Sale: ${avgSale}`);
+      // console.log(`Differential: ${differential}`);
+
+      var resultLQ = {
         itemName: itemData.Name,
         itemID: itemData.ID,
-        avgPrice: avgPriceHQ,
-        avgSale: avgSaleHQ,
-        differential: differentialHQ,
-        lowestPrices: lowestPricesHQ,
-        latestSales: latestSalesHQ,
-        isHQ: true
+        avgPrice: avgPriceLQ,
+        avgSale: avgSaleLQ,
+        differential: differentialLQ,
+        lowestPrices: lowestPricesLQ,
+        latestSales: latestSalesLQ,
+        isHQ: false
       }
-      marketAnalysis.push(resultHQ);
-    }
 
-    var sortedPricesLQ = allPricesLQ.sort((a, b) => { return a.PricePerUnit - b.PricePerUnit });
-    var lowestPricesLQ = sortedPricesLQ.slice(0, 10);
-
-      // Calculate averages of prices and recent sales, then compute the differential
-    var avgPriceLQ = _averagePricePerUnit(lowestPricesLQ);
-    var avgSaleLQ = _averagePricePerUnit(latestSalesLQ);
-    var differentialLQ = Math.round(((avgSaleLQ / avgPriceLQ) * 100) - 100);
-
-    // console.log(`Average Price: ${avgPrice}`);
-    // console.log(`Average Sale: ${avgSale}`);
-    // console.log(`Differential: ${differential}`);
-
-    var resultLQ = {
-      itemName: itemData.Name,
-      itemID: itemData.ID,
-      avgPrice: avgPriceLQ,
-      avgSale: avgSaleLQ,
-      differential: differentialLQ,
-      lowestPrices: lowestPricesLQ,
-      latestSales: latestSalesLQ,
-      isHQ: false
-    }
-
-    marketAnalysis.push(resultLQ);
-  });
+      marketAnalysis.push(resultLQ);
+    });
+  }
+  catch (error) {
+    console.log(error);
+  }
 
   return marketAnalysis;
-
 }
 
 bestDealsGivenCategoryID = async function(id, msg) {
