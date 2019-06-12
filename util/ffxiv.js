@@ -10,6 +10,19 @@ _averagePricePerUnit = function(arr) {
   return sumOfPrices / arr.length;
 };
 
+_countRecentSales = function(arr) {
+  var ts = Math.round((new Date()).getTime() / 1000);
+  var twoDaysAgo = ts - 172800;
+
+  var result = 0;
+  arr.forEach((sale) => {
+    if (sale.PurchaseDate > twoDaysAgo) {
+      result += 1;
+    }
+  })
+  return result;
+}
+
 _isGoodDeal = function(marketAnalysis, msg) {
   // If meets criteria designated in msg, return true
   // Else return false
@@ -30,13 +43,14 @@ sendMarketAnalysisEmbed = function(marketAnalyses, msg) {
 
       var replyMsg = `here's what I found:`;
 
-      if (mA.differential > 600) {
+      if (mA.differential > 600 && mA.numRecentSales > 0) {
         var quality = mA.isHQ ? 'HQ' : 'LQ';
 
         replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
         \n**Quality**: ${quality}\
         \n**Diff**: ${mA.differential}%\
         \n**Avg Unit Sale in Coeurl**: ${mA.avgSale} gil\
+        \n**# of Sales in Past 48 Hrs**: ${mA.numRecentSales}\
         \n---------------------------------------------------------------`;
 
         // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
@@ -85,6 +99,8 @@ _createMarketAnalysisGivenSummaries = function(data) {
       var allPricesHQ = [];
       var latestSalesLQ = null;
       var latestSalesHQ = null;
+      var numRecentSalesLQ = 0;
+      var numRecentSalesHQ = 0;
       var itemData = null;
 
       // Edge case, some items are null and not worth looking at
@@ -104,6 +120,9 @@ _createMarketAnalysisGivenSummaries = function(data) {
 
           var salesLQ = marketInfo.History.filter((h) => h.IsHQ === false);
           var salesHQ = marketInfo.History.filter((h) => h.IsHQ === true);
+
+          numRecentSalesLQ = _countRecentSales(salesLQ);
+          numRecentSalesHQ = _countRecentSales(salesHQ);
 
           latestSalesLQ = salesLQ.slice(0, 5);
           latestSalesHQ = salesHQ.slice(0, 5);
@@ -141,6 +160,7 @@ _createMarketAnalysisGivenSummaries = function(data) {
           differential: differentialHQ,
           lowestPrices: lowestPricesHQ,
           latestSales: latestSalesHQ,
+          numRecentSales: numRecentSalesHQ,
           isHQ: true
         }
         marketAnalysis.push(resultHQ);
@@ -171,6 +191,7 @@ _createMarketAnalysisGivenSummaries = function(data) {
         differential: differentialLQ,
         lowestPrices: lowestPricesLQ,
         latestSales: latestSalesLQ,
+        numRecentSales: numRecentSalesLQ,
         isHQ: false
       }
 
