@@ -37,6 +37,9 @@ sendMarketAnalysisEmbed = function(marketAnalyses, msg) {
 
   // Per item category
   marketAnalyses.forEach((marketAnalysis) => {
+
+    var fields = [];
+
     // Per item in a category
     marketAnalysis.forEach((mA) => {
 
@@ -45,12 +48,21 @@ sendMarketAnalysisEmbed = function(marketAnalyses, msg) {
       if (mA.differential > 600 && mA.numRecentSales > 0) {
         var quality = mA.isHQ ? 'HQ' : 'LQ';
 
-        replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
-        \n**Quality**: ${quality}\
-        \n**Diff**: ${mA.differential}%\
-        \n**Avg Unit Sale in Coeurl**: ${mA.avgSale} gil\
-        \n**# of Sales in Past 48 Hrs**: ${mA.numRecentSales}\
-        \n---------------------------------------------------------------`;
+        var field = {
+          name: `${mA.itemName} (${quality})`,
+          value: `**Diff** - ${mA.differential}%\
+                  \n**Avg Unit Sale in Coeurl** - ${mA.avgSale} gil\
+                  \n**# of Sales in Past 48 Hrs** - ${mA.numRecentSales}`
+        };
+
+        fields.push(field);
+
+        // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
+        // \n**Quality**: ${quality}\
+        // \n**Diff**: ${mA.differential}%\
+        // \n**Avg Unit Sale in Coeurl**: ${mA.avgSale} gil\
+        // \n**# of Sales in Past 48 Hrs**: ${mA.numRecentSales}\
+        // \n---------------------------------------------------------------`;
 
         // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
         // \n**Quality**: ${quality}\
@@ -62,9 +74,23 @@ sendMarketAnalysisEmbed = function(marketAnalyses, msg) {
         // \n**# of Sales in Past 48 Hrs**: *wip*\
         // \n---------------------------------------------------------------`;
 
-        msg.reply(replyMsg);
+        // msg.reply(replyMsg);
       }
     });
+
+    if (fields.length !== 0) {
+      var marketAnalysisEmbed = {
+        color: 0xCC0849,
+        author: {
+          name: 'FFXIV Market Analysis',
+          // Maybe use these for later
+          // icon_url: 'https://i.imgur.com/wSTFkRM.png',
+          // url: 'https://discord.js.org',
+        },
+        fields: fields
+      };
+      msg.channel.send({embed: marketAnalysisEmbed});
+    }
   });
 }
 
@@ -220,9 +246,11 @@ bestDealsGivenCategoryID = async function(id, msg) {
 }
 
 // Called on startup, usable for testing purposes
-testFunction = async function(id, msg) {
-  const marketSummariesResponse = await marketSummariesGivenItemIDs('12526');
-  _createMarketAnalysisGivenSummaries(marketSummariesResponse.data);
+testFunction = async function() {
+  // const marketSummariesResponse = await marketSummariesGivenItemIDs('12526');
+  // _createMarketAnalysisGivenSummaries(marketSummariesResponse.data);
+  // const itemIDsResponse = await getItemIdsGivenCategoryId(id);
+  // console.log(itemIDsResponse);
 }
 
 module.exports = {

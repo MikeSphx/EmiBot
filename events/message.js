@@ -59,4 +59,37 @@ module.exports = (client, msg) => {
     });
   }
 
+  else if (msg.content === 'emi embed test') {
+
+    var mA = {differential: 696, avgSale: 696, numRecentSales: 696};
+    var quality = 'HQ';
+
+    var fields = [
+      {name: `Ice Crystal (${quality})`,
+       value: `**Diff** - ${mA.differential}%\
+                \n**Avg Unit Sale in Coeurl** - ${mA.avgSale} gil\
+                \n**# of Sales in Past 48 Hrs** - ${mA.numRecentSales}`,
+      },
+      {name: "Fire Crystal",
+       value: `**Quality** - ${quality}\
+                \n**Diff** - ${mA.differential}%\
+                \n**Avg Unit Sale in Coeurl** - ${mA.avgSale} gil\
+                \n**# of Sales in Past 48 Hrs** - ${mA.numRecentSales}`,
+      }
+    ];
+
+    var marketAnalysisEmbed = {
+      color: 0xCC0849,
+      author: {
+        name: 'FFXIV Market Analysis',
+        // Maybe use these for later
+        // icon_url: 'https://i.imgur.com/wSTFkRM.png',
+        // url: 'https://discord.js.org',
+      },
+      fields: fields
+    };
+
+    msg.channel.send({embed: marketAnalysisEmbed});
+  }
+
 }
