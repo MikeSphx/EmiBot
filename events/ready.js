@@ -3,7 +3,7 @@ module.exports = client => {
 
   const ffxiv = require('../util/ffxiv.js');
 
-  client.channels.get('577033907040419851').send('Online!');
+  client.channels.get(process.env.EMI_CHANNEL).send('Online!');
 
   var CronJob = require('cron').CronJob;
 
@@ -12,12 +12,6 @@ module.exports = client => {
   // });
 
   // onTheHour.start();
-
-  //   const onThe2ndMinute = new CronJob('00 02 * * * *', function() {
-  //   client.channels.get('577033907040419851').send('On the hour + 2 minutes!');
-  // });
-
-  // onThe2ndMinute.start();
 
   // ffxiv.testFunction();
 

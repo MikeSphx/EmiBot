@@ -2,8 +2,7 @@ module.exports = (client, msg) => {
 
   const axios = require('axios');
 
-  const secure = require('../secure.js');
-  const apiTag = secure.xivKey;
+  const apiTag = process.env.XIV_KEY;
 
   const ffxiv = require('../util/ffxiv.js');
 
@@ -41,7 +40,8 @@ module.exports = (client, msg) => {
     // Materia 57
     // Crystals 58
 
-    var arr = [48, 57, 58];
+    var arr = [45, 48, 50, 57, 58];
+    // var arr = [48, 50, 57];
     arr.forEach((cID) => ffxiv.bestDealsGivenCategoryID(cID, msg));
   }
 

@@ -1,7 +1,6 @@
 const axios = require('axios');
 
-const secure = require('../secure.js');
-const apiTag = secure.xivKey;
+const apiTag = process.env.XIV_KEY;
 
 _averagePricePerUnit = function(arr) {
   var sumOfPrices = 0;
