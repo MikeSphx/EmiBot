@@ -28,7 +28,7 @@ _isGoodDeal = function(marketAnalysis, msg) {
   // if (marketAnalysis.differential > 150)
 }
 
-sendMarketAnalysisEmbed = function(marketAnalyses, msg) {
+sendMarketAnalysisEmbed = function(marketAnalysis, msg) {
   // If worthid, print message to server
   // Item name, item ID
   // Average of lowest 10 prices + lowest price
@@ -36,62 +36,59 @@ sendMarketAnalysisEmbed = function(marketAnalyses, msg) {
   // How many sales in the past 48 hours
 
   // Per item category
-  marketAnalyses.forEach((marketAnalysis) => {
+  var fields = [];
 
-    var fields = [];
+  // Per item in a category
+  marketAnalysis.forEach((mA) => {
 
-    // Per item in a category
-    marketAnalysis.forEach((mA) => {
+    var replyMsg = `here's what I found:`;
 
-      var replyMsg = `here's what I found:`;
+    if (mA.differential > 600 && mA.numRecentSales > 0) {
+      var quality = mA.isHQ ? 'HQ' : 'LQ';
 
-      if (mA.differential > 600 && mA.numRecentSales > 0) {
-        var quality = mA.isHQ ? 'HQ' : 'LQ';
-
-        var field = {
-          name: `${mA.itemName} (${quality})`,
-          value: `**Diff** - ${mA.differential}%\
-                  \n**Avg Unit Sale in Coeurl** - ${mA.avgSale} gil\
-                  \n**# of Sales in Past 48 Hrs** - ${mA.numRecentSales}`
-        };
-
-        fields.push(field);
-
-        // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
-        // \n**Quality**: ${quality}\
-        // \n**Diff**: ${mA.differential}%\
-        // \n**Avg Unit Sale in Coeurl**: ${mA.avgSale} gil\
-        // \n**# of Sales in Past 48 Hrs**: ${mA.numRecentSales}\
-        // \n---------------------------------------------------------------`;
-
-        // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
-        // \n**Quality**: ${quality}\
-        // \n**Diff**: ${mA.differential}%\
-        // \n\n**Avg Lowest 10 Prices**: ${mA.avgPrice} gil\
-        // \n**Lowest Price**: ${mA.lowestPrices[0].PricePerUnit} gil - ${mA.lowestPrices[0].RetainerName}, ${mA.lowestPrices[0].World}\
-        // \n\n**Avg Sales in Coeurl**: ${mA.avgSale} gil\
-        // \n**Latest Sale in Coeurl**: ${mA.latestSales[0].PricePerUnit} gil - ${mA.latestSales[0].CharacterName}, *time wip*\
-        // \n**# of Sales in Past 48 Hrs**: *wip*\
-        // \n---------------------------------------------------------------`;
-
-        // msg.reply(replyMsg);
-      }
-    });
-
-    if (fields.length !== 0) {
-      var marketAnalysisEmbed = {
-        color: 0xCC0849,
-        author: {
-          name: 'FFXIV Market Analysis',
-          // Maybe use these for later
-          // icon_url: 'https://i.imgur.com/wSTFkRM.png',
-          // url: 'https://discord.js.org',
-        },
-        fields: fields
+      var field = {
+        name: `${mA.itemName} (${quality})`,
+        value: `**Diff** - ${mA.differential}%\
+                \n**Avg Unit Sale in Coeurl** - ${mA.avgSale} gil\
+                \n**# of Sales in Past 48 Hrs** - ${mA.numRecentSales}`
       };
-      msg.channel.send({embed: marketAnalysisEmbed});
+
+      fields.push(field);
+
+      // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
+      // \n**Quality**: ${quality}\
+      // \n**Diff**: ${mA.differential}%\
+      // \n**Avg Unit Sale in Coeurl**: ${mA.avgSale} gil\
+      // \n**# of Sales in Past 48 Hrs**: ${mA.numRecentSales}\
+      // \n---------------------------------------------------------------`;
+
+      // replyMsg += `\n\n**Item**: ${mA.itemName} - ID: ${mA.itemID}\
+      // \n**Quality**: ${quality}\
+      // \n**Diff**: ${mA.differential}%\
+      // \n\n**Avg Lowest 10 Prices**: ${mA.avgPrice} gil\
+      // \n**Lowest Price**: ${mA.lowestPrices[0].PricePerUnit} gil - ${mA.lowestPrices[0].RetainerName}, ${mA.lowestPrices[0].World}\
+      // \n\n**Avg Sales in Coeurl**: ${mA.avgSale} gil\
+      // \n**Latest Sale in Coeurl**: ${mA.latestSales[0].PricePerUnit} gil - ${mA.latestSales[0].CharacterName}, *time wip*\
+      // \n**# of Sales in Past 48 Hrs**: *wip*\
+      // \n---------------------------------------------------------------`;
+
+      // msg.reply(replyMsg);
     }
   });
+
+  if (fields.length !== 0) {
+    var marketAnalysisEmbed = {
+      color: 0xCC0849,
+      author: {
+        name: 'FFXIV Market Analysis',
+        // Maybe use these for later
+        // icon_url: 'https://i.imgur.com/wSTFkRM.png',
+        // url: 'https://discord.js.org',
+      },
+      fields: fields
+    };
+    msg.channel.send({embed: marketAnalysisEmbed});
+  }
 }
 
 marketSummariesGivenItemIDs = function(ids) {
@@ -104,9 +101,19 @@ marketSummariesGivenItemIDs = function(ids) {
   });
 }
 
-getItemIdsGivenCategoryId = function(cID) {
+getItemIdsGivenCategoryId = function(cID, page) {
   return axios.get(`https://xivapi.com/search?indexes=item&filters=ItemSearchCategory.ID=${cID}`, {
     params: {
+      page: page,
+      private_key: apiTag
+    }
+  });
+}
+
+getItemIdsGivenCategoryIdPage2 = function(cID) {
+  return axios.get(`https://xivapi.com/search?indexes=item&filters=ItemSearchCategory.ID=${cID}`, {
+    params: {
+      page: 2,
       private_key: apiTag
     }
   });
@@ -231,22 +238,41 @@ _createMarketAnalysisGivenSummaries = function(data) {
 }
 
 bestDealsGivenCategoryID = async function(id, msg) {
-  const itemIDsResponse = await getItemIdsGivenCategoryId(id);
-  // TODO Access pagination itemIDs.data
-  const itemIDs = itemIDsResponse.data.Results.reduce((acc, result) => acc += `${result.ID},`, '');
-  const marketSummariesResponse = await marketSummariesGivenItemIDs(itemIDs);
-  const marketSummaries = marketSummariesResponse.data;
+  var donePagination = true;
+  var currentPage = 1;
+  var allMarketSummaries = [];
 
-  const fullMarketAnalyses = [];
+  while (donePagination) {
+    const itemIDsResponse = await getItemIdsGivenCategoryId(id, currentPage);
+    const itemIDs = itemIDsResponse.data.Results.reduce((acc, result) => acc += `${result.ID},`, '');
+    const marketSummariesResponse = await marketSummariesGivenItemIDs(itemIDs);
+    allMarketSummaries = allMarketSummaries.concat(marketSummariesResponse.data);
 
-  fullMarketAnalyses.push(_createMarketAnalysisGivenSummaries(marketSummaries, true));
+    currentPage += 1;
+    donePagination = itemIDsResponse.data.Pagination.Page !== itemIDsResponse.data.Pagination.PageTotal;
+  }
 
-  // Look through each item
-  sendMarketAnalysisEmbed(fullMarketAnalyses, msg);
+  const fullMarketAnalysis = _createMarketAnalysisGivenSummaries(allMarketSummaries);
+  sendMarketAnalysisEmbed(fullMarketAnalysis, msg);
 }
 
 // Called on startup, usable for testing purposes
 testFunction = async function() {
+  // var donePagination = true;
+  // var currentPage = 1;
+  // var allMarketSummaries = [];
+  // while (donePagination) {
+  //   const itemIDsResponse = await getItemIdsGivenCategoryId(57, currentPage);
+  //   const itemIDs = itemIDsResponse.data.Results.reduce((acc, result) => acc += `${result.ID},`, '');
+  //   const marketSummariesResponse = await marketSummariesGivenItemIDs(itemIDs);
+  //   allMarketSummaries = allMarketSummaries.concat(marketSummariesResponse.data);
+
+  //   currentPage += 1;
+  //   donePagination = itemIDsResponse.data.Pagination.Page !== itemIDsResponse.data.Pagination.PageTotal;
+  // }
+
+  // console.log(allMarketSummaries.length);
+
   // const marketSummariesResponse = await marketSummariesGivenItemIDs('12526');
   // _createMarketAnalysisGivenSummaries(marketSummariesResponse.data);
   // const itemIDsResponse = await getItemIdsGivenCategoryId(id);
