@@ -3,7 +3,7 @@ module.exports = client => {
 
   const ffxiv = require('../util/ffxiv.js');
 
-  client.channels.get(process.env.EMI_CHANNEL).send('Online!');
+  // client.channels.get(process.env.EMI_CHANNEL).send('Online!');
 
   var CronJob = require('cron').CronJob;
 

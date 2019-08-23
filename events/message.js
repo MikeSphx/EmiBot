@@ -15,6 +15,9 @@ module.exports = (client, msg) => {
 
   } else if (msg.content === 'andrew') {
     msg.reply('Andrew is a bot like me!');
+
+  } else if (msg.content === 'riley') {
+    msg.reply('Riley is a D.Va 1-trick!');
   }
 
   // FFXIV tests
