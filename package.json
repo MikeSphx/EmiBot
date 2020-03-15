@@ -10,9 +10,17 @@
     "axios": "^0.19.0",
     "cron": "^1.7.1",
     "discord.js": "^11.4.2",
-    "dotenv": "^8.0.0"
+    "dotenv": "^8.0.0",
+    "snoowrap": "^1.21.0"
   },
   "devDependencies": {
-    "nodemon": "^1.18.9"
+    "@discordjs/uws": "^10.149.0",
+    "bufferutil": "^4.0.1",
+    "erlpack": "github:discordapp/erlpack",
+    "libsodium-wrappers": "^0.7.6",
+    "node-opus": "^0.2.9",
+    "nodemon": "^1.18.9",
+    "opusscript": "0.0.6",
+    "sodium": "^2.0.3"
   }
 }
