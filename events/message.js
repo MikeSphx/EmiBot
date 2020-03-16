@@ -5,6 +5,7 @@ module.exports = (client, msg) => {
   const apiTag = process.env.XIV_KEY;
 
   const ffxiv = require('../util/ffxiv.js');
+  const reddit = require('../util/reddit.js');
 
   // Functions
 
@@ -18,6 +19,10 @@ module.exports = (client, msg) => {
 
   } else if (msg.content === 'riley') {
     msg.reply('Riley is a D.Va 1-trick!');
+  }
+
+  else if (msg.content === 'emi new-sales') {
+    msg.reply(reddit.getNewSales(client));
   }
 
   // FFXIV tests
