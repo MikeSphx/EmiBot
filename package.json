@@ -14,7 +14,7 @@
     "cron": "^1.7.1",
     "discord.js": "^11.4.2",
     "dotenv": "^8.0.0",
-    "minimist": ">=1.2.2",
+    "minimist": ">=1.2.6",
     "request": "^2.88.2",
     "set-value": ">=2.0.1",
     "snoowrap": "^1.21.0"
